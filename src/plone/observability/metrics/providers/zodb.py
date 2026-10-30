@@ -1,4 +1,3 @@
-from plone.base.utils import boolean_value
 from plone.observability.interfaces import IMetricProvider
 from plone.observability.metric import Metric
 from zope.interface import implementer
@@ -50,6 +49,20 @@ def _expensive_global_gauges(db, db_name):
     with _global_gauge_lock:
         _global_gauge_cache[db_name] = (now, value)
     return value
+
+
+def boolean_value(value, default: bool | None = None) -> bool:
+    """Return a boolean value for the given input.
+
+    Raises ValueError if the input was not recognized as a boolean.
+    """
+    if is_truthy(value):
+        return True
+    if is_falsy(value):
+        return False
+    if isinstance(default, bool):
+        return default
+    raise ValueError(f"Could not parse value {value!r} as boolean")
 
 
 def _cache_estimated_bytes(db):
